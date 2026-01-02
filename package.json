@@ -19,6 +19,9 @@
   ],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "devDependencies": {
     "@semantic-release/changelog": "6",
     "@semantic-release/commit-analyzer": "10",
