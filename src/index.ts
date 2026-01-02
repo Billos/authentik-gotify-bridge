@@ -47,7 +47,8 @@ app.use(express.json())
  * Detects if a notification body contains a login event
  */
 function isLoginEvent(body: string): boolean {
-  return body.includes("login:") && body.includes("auth_method")
+  // More specific check: look for "login:" followed by opening brace and containing 'auth_method'
+  return /login:\s*\{.*['"]auth_method['"]/.test(body)
 }
 
 /**
@@ -67,15 +68,34 @@ function parseLoginEvent(body: string): LoginEventData | null {
     let loginDataStr = body.substring(loginIndex + loginPrefix.length).trim()
     let braceCount = 0
     let endIndex = -1
+    let inString = false
+    let stringChar = ""
 
     for (let i = 0; i < loginDataStr.length; i++) {
-      if (loginDataStr[i] === "{") {
-        braceCount++
-      } else if (loginDataStr[i] === "}") {
-        braceCount--
-        if (braceCount === 0) {
-          endIndex = i + 1
-          break
+      const char = loginDataStr[i]
+      const prevChar = i > 0 ? loginDataStr[i - 1] : ""
+
+      // Track string boundaries to ignore braces inside strings
+      if ((char === "'" || char === "\"") && prevChar !== "\\") {
+        if (!inString) {
+          inString = true
+          stringChar = char
+        } else if (char === stringChar) {
+          inString = false
+          stringChar = ""
+        }
+      }
+
+      // Only count braces outside of strings
+      if (!inString) {
+        if (char === "{") {
+          braceCount++
+        } else if (char === "}") {
+          braceCount--
+          if (braceCount === 0) {
+            endIndex = i + 1
+            break
+          }
         }
       }
     }
@@ -86,13 +106,17 @@ function parseLoginEvent(body: string): LoginEventData | null {
 
     loginDataStr = loginDataStr.substring(0, endIndex)
 
-    // Convert Python dict format to JSON
-    // Replace single quotes with double quotes for keys and string values
-    const jsonStr = loginDataStr
-      .replace(/'/g, "\"")
-      .replace(/True/g, "true")
-      .replace(/False/g, "false")
-      .replace(/None/g, "null")
+    // Convert Python dict format to JSON with more careful replacements
+    // Replace True/False/None only when they are not part of a string
+    let jsonStr = loginDataStr
+    
+    // Replace Python boolean and None values (using word boundaries)
+    jsonStr = jsonStr.replace(/\bTrue\b/g, "true")
+    jsonStr = jsonStr.replace(/\bFalse\b/g, "false")
+    jsonStr = jsonStr.replace(/\bNone\b/g, "null")
+    
+    // Replace single quotes with double quotes (this is still imperfect but works for most cases)
+    jsonStr = jsonStr.replace(/'/g, "\"")
 
     const loginData = JSON.parse(jsonStr) as LoginEventData
     return loginData
@@ -139,15 +163,27 @@ function formatLoginEvent(loginData: LoginEventData, username?: string, email?: 
       lines.push(`- Path: \`${loginData.http_request.method} ${loginData.http_request.path}\``)
     }
     if (loginData.http_request.user_agent) {
-      // Simplify user agent display
+      // Simplify user agent display - be more flexible with browser detection
       const ua = loginData.http_request.user_agent
-      const browserMatch = ua.match(/(Firefox|Chrome|Safari|Edge)\/[\d.]+/)
+      
+      // Try to extract browser information
+      const browserMatch = ua.match(/(Firefox|Chrome|Safari|Edge|Opera|Brave|Vivaldi|Chromium)\/[\d.]+/i)
+      
+      // Try to extract OS information
       const osMatch = ua.match(/\((.*?)\)/)
-      if (browserMatch || osMatch) {
-        const browser = browserMatch ? browserMatch[0] : ""
-        const os = osMatch ? osMatch[1].split(";")[0].trim() : ""
-        lines.push(`- Browser: ${browser || "Unknown"}`)
-        lines.push(`- OS: ${os || "Unknown"}`)
+      
+      if (browserMatch) {
+        lines.push(`- Browser: ${browserMatch[0]}`)
+      }
+      
+      if (osMatch) {
+        const os = osMatch[1].split(";")[0].trim()
+        lines.push(`- OS: ${os}`)
+      }
+      
+      // If we couldn't extract browser info, just show it's a browser-based login
+      if (!browserMatch && !osMatch) {
+        lines.push(`- User Agent: ${ua.substring(0, 50)}${ua.length > 50 ? "..." : ""}`)
       }
     }
   }
