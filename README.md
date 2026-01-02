@@ -214,3 +214,7 @@ environment:
   # - GOTIFY_URL=https://gotify.example.com
   # - GOTIFY_TOKEN=your-token-here
 ```
+
+## TODO
+
+Update version in package.json when releasing
