@@ -5,12 +5,12 @@ A bridge between Authentik and Gotify for notifications.
 ## Prerequisites
 
 - Node.js (v14 or higher)
-- npm or yarn
+- yarn
 
 ## Installation
 
 ```bash
-npm install
+yarn install
 ```
 
 ## Development
@@ -18,7 +18,7 @@ npm install
 Run the application in development mode with automatic restart on file changes:
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 This will start the application with tsx in watch mode, automatically restarting when changes are detected in the `src` directory.
@@ -28,7 +28,7 @@ This will start the application with tsx in watch mode, automatically restarting
 Build the TypeScript project to JavaScript:
 
 ```bash
-npm run build
+yarn build
 ```
 
 The compiled JavaScript files will be placed in the `dist` directory.
@@ -38,15 +38,15 @@ The compiled JavaScript files will be placed in the `dist` directory.
 Run the built application:
 
 ```bash
-npm run start
+yarn start
 ```
 
 ## Scripts
 
-- `npm run dev` - Run in development mode with watch mode
-- `npm run build` - Compile TypeScript to JavaScript
-- `npm run start` - Run the compiled application
-- `npm run clean` - Remove the dist directory
+- `yarn dev` - Run in development mode with watch mode
+- `yarn build` - Compile TypeScript to JavaScript
+- `yarn start` - Run the compiled application
+- `yarn clean` - Remove the dist directory
 
 ## Project Structure
 
