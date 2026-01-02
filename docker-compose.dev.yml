@@ -5,6 +5,10 @@ services:
       dockerfile: Dockerfile
     command: ["dev"]
     restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "0.0.0.0:3000:3000"
     environment:
       - NODE_ENV=development
       # Uncomment and configure these environment variables as needed
