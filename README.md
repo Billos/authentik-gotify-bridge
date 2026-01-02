@@ -70,6 +70,8 @@ The `docker-compose.yml` file includes the service configuration. Make sure to s
 
 This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated versioning and releasing.
 
+**📖 For detailed setup instructions, see [SEMANTIC_RELEASE_SETUP.md](SEMANTIC_RELEASE_SETUP.md)**
+
 ### How it Works
 
 1. **Commit Analysis**: Commits are analyzed to determine the type of release (major, minor, patch)
