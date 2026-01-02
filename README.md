@@ -72,6 +72,7 @@ docker-compose -f docker-compose.dev.yml up
 ```
 
 This will:
+
 - Build the development Docker image
 - Mount your source code as a volume for hot-reloading
 - Run the application with tsx in watch mode
@@ -138,7 +139,7 @@ The bridge maps Authentik severity levels to Gotify priorities:
 
 A health check endpoint is available at `/health` for monitoring purposes.
 
-```bash
+````bash
 curl http://localhost:3000/health
 ### Docker Production
 
@@ -146,7 +147,7 @@ Using docker-compose:
 
 ```bash
 docker-compose up -d
-```
+````
 
 Or run the Docker container directly:
 
