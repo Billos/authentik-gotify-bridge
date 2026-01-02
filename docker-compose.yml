@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  authentik-gotify-bridge:
+    image: authentik-gotify-bridge:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: authentik-gotify-bridge
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # Add your environment variables here
+    # - AUTHENTIK_URL=
+    # - AUTHENTIK_TOKEN=
+    # - GOTIFY_URL=
+    # - GOTIFY_TOKEN=
