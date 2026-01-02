@@ -7,11 +7,11 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      # Uncomment and configure these environment variables as needed
+      # - AUTHENTIK_URL=https://authentik.example.com
+      # - GOTIFY_URL=https://gotify.example.com
+      # - GOTIFY_TOKEN=your-token-here
     volumes:
       - ./src:/app/src
       - ./tsconfig.json:/app/tsconfig.json
       - /app/node_modules
-    # Uncomment and configure these environment variables as needed
-    # - AUTHENTIK_URL=https://authentik.example.com
-    # - GOTIFY_URL=https://gotify.example.com
-    # - GOTIFY_TOKEN=your-token-here
