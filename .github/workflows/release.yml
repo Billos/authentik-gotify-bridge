@@ -42,6 +42,7 @@ jobs:
         id: semantic
         uses: cycjimmy/semantic-release-action@v4
         with:
+          dry_run: true
           # Install plugins as defined in .releaserc.json
           extra_plugins: |
             @semantic-release/commit-analyzer
@@ -53,7 +54,7 @@ jobs:
             @codedependant/semantic-release-docker
         env:
           # Use GH_PAT for pushing commits, fallback to GITHUB_TOKEN
-          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           # Required for Docker Hub authentication
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
