@@ -44,9 +44,12 @@ jobs:
         with:
           # Install plugins as defined in .releaserc.json
           extra_plugins: |
+            @semantic-release/commit-analyzer
+            @semantic-release/exec
+            @semantic-release/release-notes-generator
             @semantic-release/changelog
             @semantic-release/git
-            @semantic-release/exec
+            @semantic-release/github
             @codedependant/semantic-release-docker
         env:
           # Use GH_PAT for pushing commits, fallback to GITHUB_TOKEN
