@@ -1,5 +1,13 @@
 name: Release
 
+# This workflow replaces the semantic-release configuration from .releaserc.json
+# It runs on every push to the main branch and performs:
+# - Commit analysis to determine the next version
+# - Version updates in docker-compose files
+# - Changelog generation
+# - GitHub release creation
+# - Docker image build and push to Docker Hub
+
 on:
   push:
     branches:
@@ -33,12 +41,15 @@ jobs:
         id: semantic
         uses: cycjimmy/semantic-release-action@v4
         with:
+          # Install plugins as defined in .releaserc.json
           extra_plugins: |
             @semantic-release/changelog
             @semantic-release/git
             @semantic-release/exec
             @codedependant/semantic-release-docker
         env:
+          # Use GH_PAT for pushing commits, fallback to GITHUB_TOKEN
           GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          # Required for Docker Hub authentication
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

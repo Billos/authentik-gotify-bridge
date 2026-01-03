@@ -1,5 +1,8 @@
 name: CI
 
+# Runs linting, formatting checks, and builds on pull requests and non-main branches
+# This ensures code quality before merging to main
+
 on:
   pull_request:
     branches:
