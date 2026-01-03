@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/Billos/authentik-gotify-bridge/compare/1.1.0...1.2.0) (2026-01-03)
+
+
+### Bug Fixes
+
+* Add --include flag to tsx watch for monitoring all TypeScript files ([#7](https://github.com/Billos/authentik-gotify-bridge/issues/7)) ([30c1457](https://github.com/Billos/authentik-gotify-bridge/commit/30c1457ff2372758c2585f7a7334c1d444093577))
+* Correct name for env var ([c3976ba](https://github.com/Billos/authentik-gotify-bridge/commit/c3976ba1d3886eb4408605438f1202586d848676))
+
+
+### Features
+
+* Activate CI, not dry anymore ([dac223b](https://github.com/Billos/authentik-gotify-bridge/commit/dac223b513ae7cf3da60f840d941cc169353f54c))
+* Convert semantic-release from manual to GitHub Actions  ([#8](https://github.com/Billos/authentik-gotify-bridge/issues/8)) ([55f891c](https://github.com/Billos/authentik-gotify-bridge/commit/55f891c19ec1255c27ecc6904aaf76ac1a191110))
+
 # [1.1.0](https://github.com/Billos/authentik-gotify-bridge/compare/1.0.2...1.1.0) (2026-01-03)
 
 
