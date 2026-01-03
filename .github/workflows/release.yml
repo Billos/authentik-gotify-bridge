@@ -42,7 +42,6 @@ jobs:
         id: semantic
         uses: cycjimmy/semantic-release-action@v4
         with:
-          dry_run: true
           # Install plugins as defined in .releaserc.json
           extra_plugins: |
             @semantic-release/commit-analyzer
