@@ -110,11 +110,22 @@ The bridge exposes a POST endpoint at `/webhook` that accepts Authentik notifica
   "user_email": "notification user's email",
   "user_username": "notification user's username",
   "event_user_email": "event user's email",
-  "event_user_username": "event user's username"
+  "event_user_username": "event user's username",
+  "client_ip": "IP address of the connection (optional)",
+  "context": {
+    "geo": {
+      "city": "City name (optional)",
+      "country": "Country name (optional)",
+      "lat": 37.7749,
+      "long": -122.4194
+    }
+  }
 }
 ```
 
 **Content-Type**: `text/json`
+
+**Note**: The `client_ip` and `context.geo` fields are optional and will be included in the notification message if provided by Authentik. These fields can be configured in Authentik's webhook property mappings to include IP address and geolocation information for connection events.
 
 ### Authentik Configuration
 
@@ -124,7 +135,21 @@ In your Authentik instance:
 2. Create a new **Webhook** transport
 3. Set the webhook URL to: `http://your-bridge-server:3000/webhook`
 4. Set the Content-Type to `text/json`
-5. Create notification rules that use this transport
+5. (Optional) Configure property mappings to include IP and location data:
+   - Add `client_ip` field: `return request.context['notification'].event.client_ip`
+   - Add geolocation data in `context.geo` using fields like `city`, `country`, `lat`, `long`
+   - Refer to [Authentik's event actions documentation](https://docs.goauthentik.io/sys-mgmt/events/event-actions/) for detailed configuration
+6. Create notification rules that use this transport
+
+#### IP and Location Information
+
+The bridge now supports displaying IP address and geolocation information in notifications. When Authentik is configured to send `client_ip` and `context.geo` data in the webhook payload, this information will be included in the Gotify message:
+
+- **IP Address**: Shows the connection's IP address
+- **Location**: Displays city and country
+- **Coordinates**: Shows latitude and longitude (if available)
+
+This is particularly useful for monitoring login events and failed login attempts from different locations.
 
 ### Severity Mapping
 
@@ -182,7 +207,7 @@ Send a test notification:
 
 ```bash
 curl -X POST http://localhost:3000/webhook \
-  -H "Content-Type: text/json" \
+  -H "Content-Type: application/json" \
   -d '{
     "body": "User login failed",
     "severity": "high",
@@ -191,8 +216,39 @@ curl -X POST http://localhost:3000/webhook \
     "event_user_email": "admin@example.com",
     "event_user_username": "admin"
   }'
+```
+
+Send a test notification with IP and location information:
+
+```bash
+curl -X POST http://localhost:3000/webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "body": "login: {\"auth_method\": \"password\", \"auth_method_args\": {\"known_device\": false}}",
+    "severity": "info",
+    "event_user_email": "user@example.com",
+    "event_user_username": "testuser",
+    "client_ip": "203.0.113.42",
+    "context": {
+      "geo": {
+        "city": "San Francisco",
+        "country": "United States",
+        "lat": 37.7749,
+        "long": -122.4194
+      }
+    }
+  }'
+```
+
+## Project Structure
+
+```
 ├── src/                    # TypeScript source files
-│   └── index.ts           # Application entry point
+│   ├── index.ts           # Application entry point
+│   ├── types.ts           # Type definitions
+│   ├── parsers.ts         # Event parsing logic
+│   ├── formatters.ts      # Message formatting logic
+│   └── gotify.ts          # Gotify API client
 ├── dist/                  # Compiled JavaScript files (generated)
 ├── Dockerfile             # Production Docker image
 ├── Dockerfile.dev         # Development Docker image
