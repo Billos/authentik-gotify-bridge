@@ -5,9 +5,9 @@
 
 import express, { Request, Response } from "express"
 
-import { formatDefaultEvent, formatLoginEvent, formatLoginFailedEvent } from "./formatters"
+import { formatDefaultEvent, formatLoginEvent, formatLoginFailedEvent, formatUserWriteEvent } from "./formatters"
 import { Gotify } from "./gotify"
-import { isLoginEvent, isLoginFailedEvent, parseLoginEvent, parseLoginFailedEvent } from "./parsers"
+import { isLoginEvent, isLoginFailedEvent, isUserWriteEvent, parseLoginEvent, parseLoginFailedEvent, parseUserWriteEvent } from "./parsers"
 import { AuthentikNotification, FormattedEvent } from "./types"
 
 const app = express()
@@ -54,6 +54,9 @@ app.post("/webhook", async (req: Request, res: Response): Promise<void> => {
     } else if (isLoginFailedEvent(notification.body)) {
       const failedData = parseLoginFailedEvent(notification.body)
       formattedEvent = formatLoginFailedEvent(failedData)
+    } else if (isUserWriteEvent(notification.body)) {
+      const userData = parseUserWriteEvent(notification.body)
+      formattedEvent = formatUserWriteEvent(userData)
     } else {
       formattedEvent = formatDefaultEvent(notification.event_user_username, notification.event_user_email, notification.body)
     }

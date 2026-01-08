@@ -4,7 +4,7 @@
 
 import { parse } from "json5"
 
-import { LoginEventData, LoginFailedEventData } from "./types"
+import { LoginEventData, LoginFailedEventData, UserWriteEventData } from "./types"
 
 export function isLoginEvent(body: string): boolean {
   return /login:\s*/.test(body)
@@ -12,6 +12,10 @@ export function isLoginEvent(body: string): boolean {
 
 export function isLoginFailedEvent(body: string): boolean {
   return /login_failed:\s*/.test(body)
+}
+
+export function isUserWriteEvent(body: string): boolean {
+  return /user_write:\s*/.test(body)
 }
 
 function getBody(prefix: string, body: string): string {
@@ -39,4 +43,11 @@ export function parseLoginFailedEvent(body: string): LoginFailedEventData {
     throw new Error("Not a login failed event")
   }
   return parse(getBody("login_failed", body)) as LoginFailedEventData
+}
+
+export function parseUserWriteEvent(body: string): UserWriteEventData {
+  if (!isUserWriteEvent(body)) {
+    throw new Error("Not a user write event")
+  }
+  return parse(getBody("user_write", body)) as UserWriteEventData
 }

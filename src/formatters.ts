@@ -1,5 +1,5 @@
 import { getContinentEmoji, getCountryEmoji } from "./emoji"
-import { FormattedEvent, LoginEventData, LoginFailedEventData } from "./types"
+import { FormattedEvent, LoginEventData, LoginFailedEventData, UserWriteEventData } from "./types"
 
 export function formatLoginEvent(loginData: LoginEventData, username?: string, email?: string, ipAddress?: string): FormattedEvent {
   const lines: string[] = []
@@ -86,5 +86,45 @@ export function formatDefaultEvent(userUsername?: string, userEmail?: string, bo
   const title = `Notification from ${userUsername || "System"}`
   const message = `${body}\n\nUser: ${userUsername || "N/A"} (${userEmail || "N/A"})`
 
+  return { title, message }
+}
+
+export function formatUserWriteEvent(userData: UserWriteEventData): FormattedEvent {
+  const lines: string[] = []
+
+  const isNewUser = userData.created === true
+  const eventIcon = isNewUser ? "👤" : "✏️"
+  const eventType = isNewUser ? "User Created" : "User Updated"
+
+  lines.push(`${eventIcon} **${eventType}**\n`)
+
+  // User information
+  if (userData.username) {
+    lines.push(`\n**Username:** ${userData.username}`)
+  }
+
+  if (userData.name) {
+    lines.push(`\n**Name:** ${userData.name}`)
+  }
+
+  if (userData.email) {
+    lines.push(`\n**Email:** ${userData.email}`)
+  }
+
+  // User attributes
+  if (userData.attributes?.settings?.locale) {
+    lines.push(`\n**Locale:** ${userData.attributes.settings.locale}`)
+  }
+
+  // HTTP request details
+  if (userData.http_request) {
+    const req = userData.http_request
+    if (req.method || req.path) {
+      lines.push(`\n**Request:** ${req.method || "N/A"} ${req.path || "N/A"}`)
+    }
+  }
+
+  const title = `${eventType}: ${userData.username || userData.name || "Unknown user"}`
+  const message = lines.join("\n")
   return { title, message }
 }
