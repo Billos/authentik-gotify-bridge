@@ -112,6 +112,8 @@ export class Extractor {
 
     if (geo.lat !== undefined && geo.long !== undefined) {
       this.lines.push(`\n**Coordinates:** ${geo.lat}, ${geo.long}`)
+      const googleMapsUrl = `https://www.google.com/maps?q=${geo.lat},${geo.long}`
+      this.lines.push(`\n[View on Google Maps](${googleMapsUrl})`)
     }
   }
 
