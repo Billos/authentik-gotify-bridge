@@ -12,18 +12,27 @@ export interface AuthentikNotification {
   event_user_username?: string
 }
 
+interface HTTPRequest {
+  args?: Record<string, unknown>
+  path?: string
+  method?: string
+  request_id?: string
+  user_agent?: string
+}
+
+interface ModelReference {
+  pk: string
+  app: string
+  name: string
+  model_name: string
+}
+
 // Interface for parsed login event data
 export interface LoginEventData {
   auth_method?: string
-  http_request?: {
-    args?: { next?: string }
-    path?: string
-    method?: string
-    request_id?: string
-    user_agent?: string
-  }
+  http_request?: HTTPRequest
   auth_method_args?: {
-    mfa_devices?: Array<{ pk: number; app: string; name: string; model_name: string }>
+    mfa_devices?: ModelReference[]
     known_device?: boolean
   }
   geo?: {
@@ -41,20 +50,9 @@ export interface LoginEventData {
 }
 
 export interface LoginFailedEventData {
-  stage?: {
-    pk: string
-    app: string
-    name: string
-    model_name: string
-  }
+  stage?: ModelReference
   username?: string
-  http_request?: {
-    args?: { next?: string }
-    path?: string
-    method?: string
-    request_id?: string
-    user_agent?: string
-  }
+  http_request?: HTTPRequest
 }
 
 export interface UserWriteEventData {
@@ -67,13 +65,7 @@ export interface UserWriteEventData {
       locale?: string
     }
   }
-  http_request?: {
-    args?: Record<string, unknown>
-    path?: string
-    method?: string
-    request_id?: string
-    user_agent?: string
-  }
+  http_request?: HTTPRequest
 }
 
 export type FormattedEvent = {
