@@ -57,6 +57,25 @@ export interface LoginFailedEventData {
   }
 }
 
+export interface UserWriteEventData {
+  name?: string
+  email?: string
+  username?: string
+  created?: boolean
+  attributes?: {
+    settings?: {
+      locale?: string
+    }
+  }
+  http_request?: {
+    args?: Record<string, unknown>
+    path?: string
+    method?: string
+    request_id?: string
+    user_agent?: string
+  }
+}
+
 export type FormattedEvent = {
   title: string
   message: string
