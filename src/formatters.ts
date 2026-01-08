@@ -1,20 +1,7 @@
 import { FormattedEvent, LoginEventData, LoginFailedEventData } from "./types"
 
-export function formatLoginEvent(
-  loginData: LoginEventData,
-  username?: string,
-  email?: string,
-  clientIp?: string,
-  geoData?: { city?: string; country?: string; lat?: number; long?: number },
-): FormattedEvent {
+function formatLocationInfo(clientIp?: string, geoData?: { city?: string; country?: string; lat?: number; long?: number }): string[] {
   const lines: string[] = []
-
-  lines.push("🔐 **Login Event**\n")
-
-  // User information
-  if (username || email) {
-    lines.push(`\n**User:** ${username || "N/A"}${email ? ` (${email})` : ""}`)
-  }
 
   // IP and location information
   if (clientIp) {
@@ -32,6 +19,28 @@ export function formatLoginEvent(
       lines.push(`\n**Coordinates:** ${geoData.lat}, ${geoData.long}`)
     }
   }
+
+  return lines
+}
+
+export function formatLoginEvent(
+  loginData: LoginEventData,
+  username?: string,
+  email?: string,
+  clientIp?: string,
+  geoData?: { city?: string; country?: string; lat?: number; long?: number },
+): FormattedEvent {
+  const lines: string[] = []
+
+  lines.push("🔐 **Login Event**\n")
+
+  // User information
+  if (username || email) {
+    lines.push(`\n**User:** ${username || "N/A"}${email ? ` (${email})` : ""}`)
+  }
+
+  // Add IP and location information
+  lines.push(...formatLocationInfo(clientIp, geoData))
 
   // Known device status
   if (loginData.auth_method_args?.known_device !== undefined) {
@@ -65,22 +74,8 @@ export function formatLoginFailedEvent(
     lines.push(`\n**User:** ${failedData.username}`)
   }
 
-  // IP and location information
-  if (clientIp) {
-    lines.push(`\n**IP Address:** ${clientIp}`)
-  }
-
-  if (geoData && (geoData.city || geoData.country)) {
-    const locationParts = []
-    if (geoData.city) locationParts.push(geoData.city)
-    if (geoData.country) locationParts.push(geoData.country)
-    const location = locationParts.join(", ")
-    lines.push(`\n**Location:** ${location}`)
-
-    if (geoData.lat !== undefined && geoData.long !== undefined) {
-      lines.push(`\n**Coordinates:** ${geoData.lat}, ${geoData.long}`)
-    }
-  }
+  // Add IP and location information
+  lines.push(...formatLocationInfo(clientIp, geoData))
 
   // Stage information
   if (failedData.stage) {
