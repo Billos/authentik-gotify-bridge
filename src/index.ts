@@ -50,15 +50,15 @@ app.post("/webhook", async (req: Request, res: Response): Promise<void> => {
 
     if (isLoginEvent(notification.body)) {
       const loginData = parseLoginEvent(notification.body)
-      formattedEvent = formatLoginEvent(loginData, notification.event_user_username, notification.event_user_email, ipAddress)
+      formattedEvent = formatLoginEvent(ipAddress, loginData, notification.event_user_username, notification.event_user_email)
     } else if (isLoginFailedEvent(notification.body)) {
       const failedData = parseLoginFailedEvent(notification.body)
-      formattedEvent = formatLoginFailedEvent(failedData)
+      formattedEvent = formatLoginFailedEvent(ipAddress, failedData)
     } else if (isUserWriteEvent(notification.body)) {
       const userData = parseUserWriteEvent(notification.body)
-      formattedEvent = formatUserWriteEvent(userData)
+      formattedEvent = formatUserWriteEvent(ipAddress, userData)
     } else {
-      formattedEvent = formatDefaultEvent(notification.event_user_username, notification.event_user_email, notification.body)
+      formattedEvent = formatDefaultEvent(ipAddress, notification.event_user_username, notification.event_user_email, notification.body)
     }
 
     // Map severity to priority (1-10, where 10 is highest)
