@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/Billos/Panoptikauth/compare/2.0.1...2.0.2) (2026-01-19)
+
+
+### Bug Fixes
+
+* Updates docker project name ([277b0b8](https://github.com/Billos/Panoptikauth/commit/277b0b8a1fe4181ff6c9bde25379d069a924ab96))
+
 ## [2.0.1](https://github.com/Billos/Panoptikauth/compare/2.0.0...2.0.1) (2026-01-19)
 
 
