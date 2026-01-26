@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/Billos/Panoptikauth/compare/2.0.2...2.1.0) (2026-01-26)
+
+
+### Features
+
+* Adds Slack notification support ([4ac27e3](https://github.com/Billos/Panoptikauth/commit/4ac27e31108776ff64745e59578d7336d3f17531))
+
 ## [2.0.2](https://github.com/Billos/Panoptikauth/compare/2.0.1...2.0.2) (2026-01-19)
 
 
