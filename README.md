@@ -32,11 +32,21 @@ PORT=3000
 
 # Gotify configuration
 GOTIFY_URL=https://your-gotify-server.com
+
+# Optional: Configure only the endpoints you need
+# At least one endpoint token should be set for the service to be useful
 GOTIFY_TOKEN_AUTHENTIK=your-gotify-app-token
 GOTIFY_TOKEN_SLACK=your-gotify-app-token
 ```
 
 You can use `.env.example` as a template.
+
+**Note:** Each endpoint configuration is optional. You can configure:
+- Only Authentik endpoint (set only `GOTIFY_TOKEN_AUTHENTIK`)
+- Only Slack endpoint (set only `GOTIFY_TOKEN_SLACK`)
+- Both endpoints (set both tokens)
+
+Endpoints without a configured token will return a 503 Service Unavailable error.
 
 ### Docker
 

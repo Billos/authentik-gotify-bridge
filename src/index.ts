@@ -26,6 +26,13 @@ app.use(express.json())
 // POST endpoint to receive Authentik notifications
 app.post("/webhook", async (req: Request, res: Response): Promise<void> => {
   try {
+    // Check if Authentik endpoint is configured
+    if (!GOTIFY_TOKEN_AUTHENTIK) {
+      console.warn("Authentik endpoint is not configured (GOTIFY_TOKEN_AUTHENTIK not set)")
+      res.status(503).json({ error: "Authentik endpoint not configured" })
+      return
+    }
+
     console.log("Received notification from Authentik")
     // Parse the JSON from text body
     let notification: AuthentikNotification
@@ -87,15 +94,27 @@ app.get("/health", (_req: Request, res: Response) => {
 })
 
 app.post("/slack", async (req: Request<{}, {}, IncomingWebhookSendArguments>, res: Response) => {
-  console.log("Received Slack test notification:", req.body)
-  const formattedEvent: FormattedEvent = {
-    title: NOTIFICATION_SLACK_TITLE,
-    message: req.body.text || "Empty notification from Panoptikauth.",
+  try {
+    // Check if Slack endpoint is configured
+    if (!GOTIFY_TOKEN_SLACK) {
+      console.warn("Slack endpoint is not configured (GOTIFY_TOKEN_SLACK not set)")
+      res.status(503).json({ error: "Slack endpoint not configured" })
+      return
+    }
+
+    console.log("Received Slack test notification:", req.body)
+    const formattedEvent: FormattedEvent = {
+      title: NOTIFICATION_SLACK_TITLE,
+      message: req.body.text || "Empty notification from Panoptikauth.",
+    }
+    const priority = 5 // Normal priority
+    const gotify = new Gotify(GOTIFY_URL, GOTIFY_TOKEN_SLACK)
+    await gotify.sendMessage(formattedEvent.title, formattedEvent.message, priority)
+    res.status(200).json({ status: "ok", service: "panoptikauth" })
+  } catch (error) {
+    console.error("Error processing Slack notification:", error)
+    res.status(500).json({ error: "Internal server error" })
   }
-  const priority = 5 // Normal priority
-  const gotify = new Gotify(GOTIFY_URL, GOTIFY_TOKEN_SLACK)
-  await gotify.sendMessage(formattedEvent.title, formattedEvent.message, priority)
-  res.status(200).json({ status: "ok", service: "panoptikauth" })
 })
 
 /**
@@ -106,24 +125,27 @@ function main(): void {
     console.error("GOTIFY_URL environment variable not set")
     process.exit(1)
   }
-  if (!GOTIFY_TOKEN_AUTHENTIK) {
-    console.error("GOTIFY_TOKEN_AUTHENTIK environment variable not set")
-    process.exit(1)
-  }
-  if (!GOTIFY_TOKEN_SLACK) {
-    console.error("GOTIFY_TOKEN_SLACK environment variable not set")
-    process.exit(1)
+
+  // Check which endpoints are configured
+  const authentikConfigured = !!GOTIFY_TOKEN_AUTHENTIK
+  const slackConfigured = !!GOTIFY_TOKEN_SLACK
+
+  if (!authentikConfigured && !slackConfigured) {
+    console.warn("WARNING: No endpoint tokens configured. At least one of GOTIFY_TOKEN_AUTHENTIK or GOTIFY_TOKEN_SLACK should be set.")
+    console.warn("The service will start but endpoints will return 503 errors.")
   }
 
   console.log("Panoptikauth starting...")
   console.log("Environment:", process.env.NODE_ENV || "development")
   console.log("Gotify URL:", GOTIFY_URL)
-  console.log("Gotify Token AUTHENTIK configured:", GOTIFY_TOKEN_AUTHENTIK ? "Yes" : "No")
+  console.log("Endpoint configurations:")
+  console.log(`  - Authentik (/webhook): ${authentikConfigured ? "Enabled" : "Disabled"}`)
+  console.log(`  - Slack (/slack): ${slackConfigured ? "Enabled" : "Disabled"}`)
 
   app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
-    console.log(`Webhook endpoint: http://localhost:${PORT}/webhook`)
-    console.log(`Slack endpoint: http://localhost:${PORT}/slack`)
+    console.log(`Webhook endpoint: http://localhost:${PORT}/webhook ${authentikConfigured ? "" : "(not configured)"}`)
+    console.log(`Slack endpoint: http://localhost:${PORT}/slack ${slackConfigured ? "" : "(not configured)"}`)
     console.log(`Health check: http://localhost:${PORT}/health`)
   })
 }
