@@ -13,9 +13,9 @@ Runs on:
 
 Steps:
 
-1. Lint the code (`npm run lint`)
-2. Check formatting (`npm run format-check`)
-3. Build the project (`npm run build`)
+1. Lint the code (`yarn lint`)
+2. Check formatting (`yarn format-check`)
+3. Build the project (`yarn build`)
 
 ### Release Workflow (`.github/workflows/release.yml`)
 
