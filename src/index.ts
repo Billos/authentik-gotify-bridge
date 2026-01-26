@@ -119,6 +119,7 @@ function main(): void {
   console.log("Environment:", process.env.NODE_ENV || "development")
   console.log("Gotify URL:", GOTIFY_URL)
   console.log("Gotify Token AUTHENTIK configured:", GOTIFY_TOKEN_AUTHENTIK ? "Yes" : "No")
+  console.log("Gotify Token SLACK configured:", GOTIFY_TOKEN_SLACK ? "Yes" : "No")
 
   app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
