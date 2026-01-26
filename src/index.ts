@@ -3,6 +3,7 @@
  * Entry point for the application
  */
 
+import { IncomingWebhookSendArguments } from "@slack/webhook"
 import express, { Request, Response } from "express"
 
 import { formatDefaultEvent, formatLoginEvent, formatLoginFailedEvent, formatUserWriteEvent } from "./formatters"
@@ -15,7 +16,9 @@ const app = express()
 // Configuration from environment variables
 const PORT = process.env.PORT || 3000
 const GOTIFY_URL = process.env.GOTIFY_URL || ""
-const GOTIFY_TOKEN = process.env.GOTIFY_TOKEN || ""
+const GOTIFY_TOKEN_AUTHENTIK = process.env.GOTIFY_TOKEN_AUTHENTIK || ""
+const GOTIFY_TOKEN_SLACK = process.env.GOTIFY_TOKEN_SLACK || ""
+const NOTIFICATION_SLACK_TITLE = process.env.NOTIFICATION_SLACK_TITLE || "Slack Notification"
 
 // Middleware to parse text/json content type
 app.use(express.json())
@@ -67,7 +70,7 @@ app.post("/webhook", async (req: Request, res: Response): Promise<void> => {
     const priority = severityLower ? priorityMap[severityLower] || 5 : 5
 
     // Send to Gotify
-    const gotify = new Gotify(GOTIFY_URL, GOTIFY_TOKEN)
+    const gotify = new Gotify(GOTIFY_URL, GOTIFY_TOKEN_AUTHENTIK)
     await gotify.sendMessage(formattedEvent.title, formattedEvent.message, priority)
 
     console.log("Notification forwarded to Gotify successfully")
@@ -83,6 +86,18 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok", service: "panoptikauth" })
 })
 
+app.post("/slack", async (req: Request<{}, {}, IncomingWebhookSendArguments>, res: Response) => {
+  console.log("Received Slack test notification:", req.body)
+  const formattedEvent: FormattedEvent = {
+    title: NOTIFICATION_SLACK_TITLE,
+    message: req.body.text || "Empty notification from Panoptikauth.",
+  }
+  const priority = 5 // Normal priority
+  const gotify = new Gotify(GOTIFY_URL, GOTIFY_TOKEN_SLACK)
+  await gotify.sendMessage(formattedEvent.title, formattedEvent.message, priority)
+  res.status(200).json({ status: "ok", service: "panoptikauth" })
+})
+
 /**
  * Send notification to Gotify using multipart/form-data
  */
@@ -91,19 +106,24 @@ function main(): void {
     console.error("GOTIFY_URL environment variable not set")
     process.exit(1)
   }
-  if (!GOTIFY_TOKEN) {
-    console.error("GOTIFY_TOKEN environment variable not set")
+  if (!GOTIFY_TOKEN_AUTHENTIK) {
+    console.error("GOTIFY_TOKEN_AUTHENTIK environment variable not set")
+    process.exit(1)
+  }
+  if (!GOTIFY_TOKEN_SLACK) {
+    console.error("GOTIFY_TOKEN_SLACK environment variable not set")
     process.exit(1)
   }
 
   console.log("Panoptikauth starting...")
   console.log("Environment:", process.env.NODE_ENV || "development")
   console.log("Gotify URL:", GOTIFY_URL)
-  console.log("Gotify Token configured:", GOTIFY_TOKEN ? "Yes" : "No")
+  console.log("Gotify Token AUTHENTIK configured:", GOTIFY_TOKEN_AUTHENTIK ? "Yes" : "No")
 
   app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
     console.log(`Webhook endpoint: http://localhost:${PORT}/webhook`)
+    console.log(`Slack endpoint: http://localhost:${PORT}/slack`)
     console.log(`Health check: http://localhost:${PORT}/health`)
   })
 }

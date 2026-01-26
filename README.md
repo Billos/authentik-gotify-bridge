@@ -32,7 +32,8 @@ PORT=3000
 
 # Gotify configuration
 GOTIFY_URL=https://your-gotify-server.com
-GOTIFY_TOKEN=your-gotify-app-token
+GOTIFY_TOKEN_AUTHENTIK=your-gotify-app-token
+GOTIFY_TOKEN_SLACK=your-gotify-app-token
 ```
 
 You can use `.env.example` as a template.
@@ -212,7 +213,8 @@ environment:
   - NODE_ENV=production
   # - AUTHENTIK_URL=https://authentik.example.com
   # - GOTIFY_URL=https://gotify.example.com
-  # - GOTIFY_TOKEN=your-token-here
+  # - GOTIFY_TOKEN_AUTHENTIK=your-token-here
+  # - GOTIFY_TOKEN_SLACK=your-token-here
 ```
 
 ## TODO
