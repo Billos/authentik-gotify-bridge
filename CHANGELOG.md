@@ -1,3 +1,16 @@
+# [2.2.0](https://github.com/Billos/Panoptikauth/compare/2.1.0...2.2.0) (2026-01-27)
+
+
+### Bug Fixes
+
+* Logs if the SLACK token is configured ([93b7017](https://github.com/Billos/Panoptikauth/commit/93b7017882785689388e83a6a69500a8fd685396))
+
+
+### Features
+
+* Implements Authentik webhook handler ([114f34f](https://github.com/Billos/Panoptikauth/commit/114f34f4538cf88031524be508eec364a0f29e30))
+* Remove Slack specific token ([361a2f0](https://github.com/Billos/Panoptikauth/commit/361a2f0ee64ae33764dafa5253c588ec36950aff))
+
 # [2.1.0](https://github.com/Billos/Panoptikauth/compare/2.0.2...2.1.0) (2026-01-26)
 
 
