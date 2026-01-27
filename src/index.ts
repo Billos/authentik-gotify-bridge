@@ -5,6 +5,7 @@
 
 import express, { Request, Response } from "express"
 
+import { handleHealthCheck } from "./controllers/health"
 import { handleSlackRequest } from "./controllers/slack"
 import { formatDefaultEvent, formatLoginEvent, formatLoginFailedEvent, formatUserWriteEvent } from "./formatters"
 import { Gotify } from "./gotify"
@@ -79,10 +80,7 @@ app.post("/webhook", async (req: Request, res: Response): Promise<void> => {
   }
 })
 
-// Health check endpoint
-app.get("/health", (_req: Request, res: Response) => {
-  res.status(200).json({ status: "ok", service: "panoptikauth" })
-})
+app.get("/health", handleHealthCheck)
 
 app.post("/slack", handleSlackRequest)
 
